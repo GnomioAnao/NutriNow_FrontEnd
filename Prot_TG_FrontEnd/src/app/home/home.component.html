@@ -116,7 +116,7 @@
                 --tw-contain-layout: ;
                 --tw-contain-paint: ;
                 --tw-contain-style: ;
-            } /*! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com*/
+            } 
             *,
             :after,
             :before {
@@ -232,42 +232,55 @@
             button,
             select {
                 text-transform: none;
-            }
             button,
             input:where([type="button"]),
             input:where([type="reset"]),
             input:where([type="submit"]) {
+                appearance: button;
                 -webkit-appearance: button;
+                -moz-appearance: button;
                 background-color: transparent;
                 background-image: none;
+                }
             }
+
             :-moz-focusring {
                 outline: auto;
             }
+
             :-moz-ui-invalid {
                 box-shadow: none;
             }
+
             progress {
                 vertical-align: baseline;
             }
+
             ::-webkit-inner-spin-button,
             ::-webkit-outer-spin-button {
                 height: auto;
             }
+
             [type="search"] {
+                appearance: textfield;
                 -webkit-appearance: textfield;
                 outline-offset: -2px;
             }
+
             ::-webkit-search-decoration {
                 -webkit-appearance: none;
             }
+
             ::-webkit-file-upload-button {
+                appearance: button;
                 -webkit-appearance: button;
                 font: inherit;
             }
+
             summary {
                 display: list-item;
             }
+
             blockquote,
             dd,
             dl,
@@ -283,13 +296,16 @@
             pre {
                 margin: 0;
             }
+
             fieldset {
                 margin: 0;
             }
+
             fieldset,
             legend {
                 padding: 0;
             }
+
             menu,
             ol,
             ul {
@@ -297,24 +313,30 @@
                 margin: 0;
                 padding: 0;
             }
+
             dialog {
                 padding: 0;
             }
+
             textarea {
                 resize: vertical;
             }
+
             input::placeholder,
             textarea::placeholder {
                 color: #9ca3af;
                 opacity: 1;
             }
+
             [role="button"],
             button {
                 cursor: pointer;
             }
+
             :disabled {
                 cursor: default;
             }
+
             audio,
             canvas,
             embed,
@@ -324,7 +346,6 @@
             svg,
             video {
                 display: block;
-                vertical-align: middle;
             }
             img,
             video {
@@ -652,38 +673,38 @@
                 <header
                     class="flex justify-between items-center bg-gradient-to-r from-teal-600 to-teal-500 p-4 text-white shadow-md"
                 >
-                    <div class="flex items-center">
+                    <a routerLink="/login" class="flex items-center no-underline">
                         <div
                             class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm transition-transform hover:scale-110"
                         >
                             <img src="https://img.icons8.com/color/48/000000/home.png" alt="Home" class="w-6 h-6" />
                         </div>
-                    </div>
+                    </a>
+
                     <div class="flex space-x-4">
                         <button
+                            routerLink="/home"
                             class="bg-white text-teal-600 px-6 py-2 rounded-lg text-sm font-medium shadow-sm transition-all hover:bg-teal-50 hover:shadow"
                         >
                             Home
                         </button>
-                     
+
                         <button
-                            class="bg-white text-teal-600 px-6 py-2 rounded-lg text-sm font-medium shadow-sm transition-all hover:bg-teal-50 hover:shadow "
+                            routerLink="/chatbot"
+                            class="bg-white text-teal-600 px-6 py-2 rounded-lg text-sm font-medium shadow-sm transition-all hover:bg-teal-50 hover:shadow"
                         >
                             Chatbot
                         </button>
-                        <button
-                            class="bg-white text-teal-600 px-6 py-2 rounded-lg text-sm font-medium shadow-sm transition-all hover:bg-teal-50 hover:shadow"
-                        >
-                            Artigos
-                        </button>
+
                     </div>
-                    <div class="flex items-center">
+                    <a routerLink="/cadastro" class="flex items-center no-underline">
                         <div
-                            class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm cursor-pointer transition-transform hover:scale-110"
+                            class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm transition-transform hover:scale-110"
                         >
                             <span class="material-symbols-outlined text-teal-500">person</span>
                         </div>
-                    </div>
+                    </a>
+
                 </header>
                 <section class="bg-white p-6 flex flex-col items-center shadow-sm">
                     <div class="flex items-center mb-3">
@@ -802,4 +823,3 @@
         </div>
     </body>
 </html>
-

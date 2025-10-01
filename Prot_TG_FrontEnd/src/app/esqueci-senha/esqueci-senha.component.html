@@ -1,14 +1,17 @@
 <div class="login-container">
   <header class="login-header">
-    <button class="icon-btn" style="margin-right: 15px"><i class="material-symbols-outlined">lock</i></button>
+    <button class="icon-btn" style="margin-right: 15px">
+      <i class="material-symbols-outlined">lock</i>
+    </button>
 
     <nav class="menu">
       <a routerLink="/home" class="menu-btn">Home</a>
       <a routerLink="/chatbot" class="menu-btn">ChatBot</a>
-      <a routerLink="/artigos" class="menu-btn">Artigos</a>
     </nav>
 
-    <button class="icon-btn" style="margin-left: 15px"><i class="material-symbols-outlined">person</i></button>
+    <a class="icon-btn" style="margin-left: 15px" routerLink="/cadastro">
+      <i class="material-symbols-outlined">person</i>
+    </a>
   </header>
 
   <main class="login-card">
@@ -27,8 +30,13 @@
         />
       </div>
 
-      <button type="submit" class="btn-primary" [disabled]="form.invalid">Enviar link de redefinição</button>
-      <button type="button" class="btn-secondary" routerLink="/login">Voltar para login</button>
+      <button type="submit" class="btn-primary" [disabled]="form.invalid">
+        Enviar link de redefinição
+      </button>
+
+      <button type="button" class="btn-secondary" routerLink="/login">
+        Voltar para login
+      </button>
     </form>
 
     <p *ngIf="mensagem" class="mensagem-sucesso">{{ mensagem }}</p>

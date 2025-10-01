@@ -2,14 +2,15 @@ import { Component, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, HttpClientModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
-  encapsulation: ViewEncapsulation.None // 🔑 permite estilizar body e aplicar reset global só nesse componente
+  encapsulation: ViewEncapsulation.None
 })
 export class LoginComponent {
 
@@ -18,6 +19,7 @@ export class LoginComponent {
   togglePassword() {
     this.showPassword = !this.showPassword;
   }
+
   credenciais = {
     email: '',
     senha: ''
@@ -26,7 +28,7 @@ export class LoginComponent {
   mensagem = '';
   erro = '';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   login(): void {
     this.mensagem = '';
@@ -35,8 +37,6 @@ export class LoginComponent {
     this.http.post('http://localhost:5000/login', this.credenciais).subscribe({
       next: (res: any) => {
         this.mensagem = res.message || 'Login realizado com sucesso!';
-        // Exemplo: salvar token no localStorage e redirecionar
-        // localStorage.setItem('token', res.token);
       },
       error: (err) => {
         this.erro = err.error?.error || 'Erro ao realizar login';

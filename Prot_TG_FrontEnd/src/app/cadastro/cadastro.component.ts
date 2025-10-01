@@ -2,21 +2,23 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-cadastro',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    HttpClientModule,
+    RouterModule
+  ],
   templateUrl: './cadastro.component.html',
   styleUrls: ['./cadastro.component.css']
 })
 export class CadastroComponent {
   showPassword = false;
-
-  togglePassword() {
-    this.showPassword = !this.showPassword;
-    console.log("Toggle clicado:", this.showPassword);
-  }
 
   usuario = {
     nome: '',
@@ -30,7 +32,15 @@ export class CadastroComponent {
   mensagem = '';
   erro = '';
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {}
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+    console.log("Toggle clicado:", this.showPassword);
+  }
 
   criarConta(): void {
     this.mensagem = '';
@@ -47,5 +57,7 @@ export class CadastroComponent {
     });
   }
 
-
+  voltar(): void {
+    this.router.navigate(['/home']);
+  }
 }

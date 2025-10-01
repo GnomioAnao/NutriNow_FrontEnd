@@ -2,11 +2,17 @@ import { Component, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-esqueci-senha',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    HttpClientModule,
+    RouterModule
+  ],
   templateUrl: './esqueci-senha.component.html',
   styleUrls: ['./esqueci-senha.component.css'],
   encapsulation: ViewEncapsulation.None
@@ -17,13 +23,13 @@ export class EsqueciSenhaComponent {
   mensagem = '';
   erro = '';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   esqueciSenha(): void {
     this.mensagem = '';
     this.erro = '';
 
-    if (!this.email) {
+    if (!this.email.trim()) {
       this.erro = 'Por favor, informe seu email';
       return;
     }
