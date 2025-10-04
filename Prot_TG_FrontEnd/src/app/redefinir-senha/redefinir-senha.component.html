@@ -1,0 +1,56 @@
+<div class="login-container">
+    <header class="login-header">
+      <button class="icon-btn" style="margin-right: 15px">
+        <i class="material-symbols-outlined">lock_reset</i>
+      </button>
+  
+      <nav class="menu">
+        <a routerLink="/home" class="menu-btn">Home</a>
+        <a routerLink="/chatbot" class="menu-btn">ChatBot</a>
+      </nav>
+  
+      <a class="icon-btn" style="margin-left: 15px" routerLink="/cadastro">
+        <i class="material-symbols-outlined">person</i>
+      </a>
+    </header>
+  
+    <main class="login-card">
+      <h1>Redefinir Senha</h1>
+      <p>Crie uma nova senha para sua conta abaixo.</p>
+  
+      <form class="login-form" (ngSubmit)="redefinirSenha()" #form="ngForm">
+        <div class="input-group">
+          <i class="material-symbols-outlined">lock</i>
+          <input
+            type="password"
+            placeholder="Nova senha"
+            [(ngModel)]="novaSenha"
+            name="novaSenha"
+            required
+          />
+        </div>
+  
+        <div class="input-group">
+          <i class="material-symbols-outlined">lock</i>
+          <input
+            type="password"
+            placeholder="Confirmar nova senha"
+            [(ngModel)]="confirmarSenha"
+            name="confirmarSenha"
+            required
+          />
+        </div>
+  
+        <button type="submit" class="btn-primary" [disabled]="form.invalid">
+          Redefinir Senha
+        </button>
+  
+        <button type="button" class="btn-secondary" routerLink="/login">
+          Voltar para login
+        </button>
+      </form>
+  
+      <p *ngIf="mensagem" class="mensagem-sucesso">{{ mensagem }}</p>
+      <p *ngIf="erro" class="mensagem-erro">{{ erro }}</p>
+    </main>
+  </div>

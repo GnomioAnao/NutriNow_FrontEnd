@@ -5,6 +5,7 @@ import { CadastroComponent } from './cadastro/cadastro.component';
 import { HomeComponent } from './home/home.component';
 import { ChatbotComponent } from './chatbot/chatbot.component';
 import { EsqueciSenhaComponent } from './esqueci-senha/esqueci-senha.component';
+import { RedefinirSenhaComponent } from './redefinir-senha/redefinir-senha.component';
 
 export const routes: Routes = [
     {path: 'login', component: LoginComponent},
@@ -12,5 +13,6 @@ export const routes: Routes = [
     {path: 'home', component: HomeComponent},
     {path: 'chatbot', component: ChatbotComponent, canActivate: [AuthGuard]},
     {path: 'esqueci-senha', component: EsqueciSenhaComponent},
-    { path: '', redirectTo: 'home', pathMatch: 'full' }
+    { path: '', redirectTo: 'home', pathMatch: 'full' },
+    {path: 'redefinir-senha', component: RedefinirSenhaComponent}
 ];
