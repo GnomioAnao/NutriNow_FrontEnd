@@ -6,14 +6,18 @@
   border: 0;
 }
 
+
+
 body {
   font-family: 'Open Sans', sans-serif;
   background: linear-gradient(to bottom right, #34d399, #059669);
+  background-attachment: fixed;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100vh;
 }
+
 
 /* Container principal */
 .login-container {
@@ -25,10 +29,12 @@ body {
 /* Header */
 .login-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  gap: 70px;
   margin-bottom: 40px;
 }
+
 
 .icon-btn {
   background: #fff;
@@ -43,7 +49,7 @@ body {
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   transition: transform 0.2s, box-shadow 0.2s;
-  text-decoration: none; /* Para que se routerLink for link, não fique sublinhado */
+  text-decoration: none;
 }
 
 .icon-btn:hover {
@@ -66,7 +72,7 @@ body {
   cursor: pointer;
   transition: background 0.3s, color 0.3s;
   color: inherit;
-  text-decoration: none; /* Remove sublinhado */
+  text-decoration: none;
   border: none;
   display: flex;
   align-items: center;
@@ -238,5 +244,5 @@ body {
 .icon {
   width: 22px;
   height: 22px;
-  color: rgba(0, 0, 0, 0.5); /* cinza meio transparente */
+  color: rgba(0, 0, 0, 0.5);
 }
