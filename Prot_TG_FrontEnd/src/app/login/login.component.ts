@@ -2,7 +2,8 @@ import { Component, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../services/auth.service'; // importa o AuthService
 
 @Component({
   selector: 'app-login',
@@ -16,10 +17,6 @@ export class LoginComponent {
 
   showPassword = false;
 
-  togglePassword() {
-    this.showPassword = !this.showPassword;
-  }
-
   credenciais = {
     email: '',
     senha: ''
@@ -28,17 +25,42 @@ export class LoginComponent {
   mensagem = '';
   erro = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private authService: AuthService // injeta o AuthService
+  ) {}
 
-  login(): void {
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
+
+  login(event?: Event): void {
+    if (event) event.preventDefault(); // evita reload de página
+
     this.mensagem = '';
     this.erro = '';
 
-    this.http.post('http://localhost:5000/login', this.credenciais).subscribe({
+    this.http.post('http://localhost:8000/login', this.credenciais).subscribe({
       next: (res: any) => {
-        this.mensagem = res.message || 'Login realizado com sucesso!';
+        console.log('Resposta do backend:', res);
+
+        if (res && res.user) {
+          // Armazena usuário no AuthService
+          this.authService.login(res.user);
+
+          this.mensagem = res.message || 'Login realizado com sucesso!';
+
+          // Redireciona para o chatbot
+          setTimeout(() => {
+            this.router.navigate(['/chatbot']);
+          }, 300);
+        } else {
+          this.erro = 'Usuário ou senha incorretos';
+        }
       },
       error: (err) => {
+        console.error('Erro no login:', err);
         this.erro = err.error?.error || 'Erro ao realizar login';
       }
     });

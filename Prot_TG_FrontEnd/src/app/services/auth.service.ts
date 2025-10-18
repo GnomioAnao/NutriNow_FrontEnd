@@ -1,94 +1,53 @@
-// auth.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 
+// ===================================
+// Interface User
+// ===================================
 export interface User {
   id: number;
-  name: string;
+  nome: string;
   email: string;
-}
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface RegisterRequest {
-  first_name: string;
-  last_name: string;
-  birth_date: string;
-  gender: string;
-  email: string;
-  password: string;
-}
-
-export interface ApiResponse {
-  success: boolean;
-  message?: string;
-  error?: string;
-  user?: User;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://127.0.0.1:8000/api';
+
+  // BehaviorSubject com tipagem User | null
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  private httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json'
-    }),
-    withCredentials: true // Para manter a sessão
-  };
-
-  constructor(private http: HttpClient) {
-    // Verifica se há usuário logado ao inicializar
-    this.checkAuthStatus();
-  }
-
-  register(userData: RegisterRequest): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${this.apiUrl}/register`, userData, this.httpOptions);
-  }
-
-  login(credentials: LoginRequest): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${this.apiUrl}/login`, credentials, this.httpOptions)
-      .pipe(
-        tap(response => {
-          if (response.success && response.user) {
-            this.currentUserSubject.next(response.user);
-            localStorage.setItem('currentUser', JSON.stringify(response.user));
-          }
-        })
-      );
-  }
-
-  logout(): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${this.apiUrl}/logout`, {}, this.httpOptions)
-      .pipe(
-        tap(() => {
-          this.currentUserSubject.next(null);
-          localStorage.removeItem('currentUser');
-        })
-      );
-  }
-
-  private checkAuthStatus(): void {
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      this.currentUserSubject.next(JSON.parse(savedUser));
+  constructor() {
+    // Carrega usuário do localStorage se existir
+    const user = localStorage.getItem('usuario');
+    if (user) {
+      this.currentUserSubject.next(JSON.parse(user));
     }
   }
 
-  getCurrentUser(): User | null {
-    return this.currentUserSubject.value;
+  // ===================================
+  // Login: atualiza BehaviorSubject e salva no localStorage
+  // ===================================
+  login(user: User): void {
+    this.currentUserSubject.next(user);
+    localStorage.setItem('usuario', JSON.stringify(user));
   }
 
-  isAuthenticated(): boolean {
-    return !!this.getCurrentUser();
+  // ===================================
+  // Logout: limpa BehaviorSubject e localStorage
+  // ===================================
+  logout(): Observable<void> {
+    this.currentUserSubject.next(null);
+    localStorage.removeItem('usuario');
+    return of(); // Retorna Observable vazio para compatibilidade com .subscribe()
+  }
+
+  // ===================================
+  // Retorna usuário atual (sincrono)
+  // ===================================
+  getCurrentUser(): User | null {
+    return this.currentUserSubject.value;
   }
 }

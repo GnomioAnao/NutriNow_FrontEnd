@@ -35,9 +35,6 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     private router: Router
   ) {}
 
-  // ===================================
-  // Ciclo de vida
-  // ===================================
   ngOnInit() {
     // Autenticação
     this.subscription.add(
@@ -64,9 +61,6 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  // ===================================
-  // Geração de Session ID
-  // ===================================
   private generateSessionId(): string {
     const existing = localStorage.getItem('nutrinow_session_id');
     if (existing) return existing;
@@ -76,9 +70,6 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     return sid;
   }
 
-  // ===================================
-  // Histórico de chat
-  // ===================================
   private loadChatHistory() {
     if (!this.sessionId) return;
 
@@ -97,9 +88,6 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ===================================
-  // Envio de mensagens
-  // ===================================
   sendMessage() {
     if (!this.currentMessage.trim() || this.loading) return;
 
@@ -147,9 +135,6 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ===================================
-  // Upload e análise de imagem
-  // ===================================
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     if (!file) return;
@@ -195,9 +180,6 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ===================================
-  // Scroll automático
-  // ===================================
   private scrollToBottom() {
     setTimeout(() => {
       if (this.messagesContainer?.nativeElement) {
@@ -207,16 +189,9 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     }, 100);
   }
 
-  // ===================================
-  // Logout
-  // ===================================
   logout() {
-    this.authService.logout().subscribe({
-      next: () => this.router.navigate(['/login']),
-      error: (err) => {
-        console.error('Erro ao fazer logout:', err);
-        this.router.navigate(['/login']);
-      }
-    });
+    // Apenas limpa o usuário local e redireciona
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }
