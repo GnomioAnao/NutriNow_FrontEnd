@@ -11,6 +11,10 @@ export class LoginService {
   constructor(private http: HttpClient) {}
 
   login(email: string, senha: string): Observable<any> {
-    return this.http.post<any>(this.apiUrl, { email, senha });
+    return this.http.post<any>(
+      this.apiUrl,
+      { email, senha },
+      { withCredentials: true } // ✅ envia o cookie de sessão
+    );
   }
 }

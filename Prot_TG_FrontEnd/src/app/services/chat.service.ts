@@ -1,22 +1,12 @@
+// src/app/services/chat.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-export interface ChatMessage {
-  message: string;
-  session_id?: string;
-}
 
 export interface ChatResponse {
   success: boolean;
-  session_id: string;
-  response: string;
-  error?: string;
-}
-
-export interface ChatHistoryResponse {
-  success: boolean;
-  history: any[];
+  session_id?: string;
+  response?: string;
   error?: string;
 }
 
@@ -24,50 +14,58 @@ export interface ChatHistoryResponse {
   providedIn: 'root'
 })
 export class ChatService {
-  private apiUrl = 'http://127.0.0.1:8000/api';
+  private apiUrl = 'http://localhost:8000';
   private sessionId: string | null = null;
-
-  private httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type': 'application/json'
-    }),
-    withCredentials: true
-  };
 
   constructor(private http: HttpClient) {}
 
-  sendMessage(message: string): Observable<ChatResponse> {
-    const payload: ChatMessage = {
-      message: message,
-      session_id: this.sessionId || undefined
-    };
-
-    return this.http.post<ChatResponse>(`${this.apiUrl}/chat`, payload, this.httpOptions);
-  }
-
-  getChatHistory(sessionId: string): Observable<ChatHistoryResponse> {
-    return this.http.get<ChatHistoryResponse>(`${this.apiUrl}/chat_history?session_id=${sessionId}`, this.httpOptions);
-  }
-
-  analyzeImage(file: File, sessionId?: string): Observable<ChatResponse> {
-    const formData = new FormData();
-    formData.append('file', file);
-    if (sessionId || this.sessionId) {
-      formData.append('session_id', sessionId || this.sessionId!);
-    }
-
-    const options = {
-      withCredentials: true
-    };
-
-    return this.http.post<ChatResponse>(`${this.apiUrl}/analyze_image`, formData, options);
-  }
-
-  setSessionId(sessionId: string): void {
-    this.sessionId = sessionId;
+  // Armazena sessionId local
+  setSessionId(sid: string) {
+    this.sessionId = sid;
+    localStorage.setItem('nutrinow_session_id', sid);
   }
 
   getSessionId(): string | null {
+    if (!this.sessionId) {
+      this.sessionId = localStorage.getItem('nutrinow_session_id');
+    }
     return this.sessionId;
+  }
+
+  // Envia mensagem para o chatbot
+  sendMessage(message: string): Observable<ChatResponse> {
+    const headers: any = {};
+    const session_id = this.getSessionId();
+    if (session_id) headers['X-Session-ID'] = session_id;
+
+    return this.http.post<ChatResponse>(
+      `${this.apiUrl}/chat`,
+      { message },
+      { headers, withCredentials: true } // ESSENCIAL
+    );
+  }
+
+  // Recupera histórico de mensagens
+  getChatHistory(): Observable<any> {
+    const session_id = this.getSessionId();
+    const params: any = {};
+    if (session_id) params['session_id'] = session_id;
+
+    return this.http.get<any>(
+      `${this.apiUrl}/chat_history`,
+      { params, withCredentials: true } // ESSENCIAL
+    );
+  }
+
+  // Analisa imagem
+  analyzeImage(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post<any>(
+      `${this.apiUrl}/analyze_image`,
+      formData,
+      { withCredentials: true } // ESSENCIAL
+    );
   }
 }

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../services/auth.service'; // importa o AuthService
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -28,7 +28,7 @@ export class LoginComponent {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private authService: AuthService // injeta o AuthService
+    private authService: AuthService
   ) {}
 
   togglePassword() {
@@ -36,22 +36,21 @@ export class LoginComponent {
   }
 
   login(event?: Event): void {
-    if (event) event.preventDefault(); // evita reload de página
+    if (event) event.preventDefault();
 
     this.mensagem = '';
     this.erro = '';
 
-    this.http.post('http://localhost:8000/login', this.credenciais).subscribe({
+    this.http.post('http://127.0.0.1:8000/login', this.credenciais, {
+      withCredentials: true // ✅ essencial para cookies de sessão
+    }).subscribe({
       next: (res: any) => {
         console.log('Resposta do backend:', res);
 
         if (res && res.user) {
-          // Armazena usuário no AuthService
           this.authService.login(res.user);
-
           this.mensagem = res.message || 'Login realizado com sucesso!';
 
-          // Redireciona para o chatbot
           setTimeout(() => {
             this.router.navigate(['/chatbot']);
           }, 300);

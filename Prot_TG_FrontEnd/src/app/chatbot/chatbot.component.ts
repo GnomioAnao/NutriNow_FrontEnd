@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, User } from '../services/auth.service';
-import { ChatService, ChatResponse } from './../services/chat.service';
+import { ChatService, ChatResponse } from '../services/chat.service';
 import { Subscription } from 'rxjs';
 
 interface Message {
@@ -26,35 +27,37 @@ export class ChatbotComponent implements OnInit, OnDestroy {
   loading = false;
   private subscription = new Subscription();
   private sessionId: string | null = null;
+  private isBrowser: boolean;
 
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
 
   constructor(
     private authService: AuthService,
     private chatService: ChatService,
-    private router: Router
-  ) {}
+    private router: Router,
+    @Inject(PLATFORM_ID) platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit() {
-    // Autenticação
     this.subscription.add(
       this.authService.currentUser$.subscribe(user => {
         this.currentUser = user;
-        if (!user) {
+        if (!user && this.isBrowser) {
           this.router.navigate(['/login']);
         }
       })
     );
 
-    // Recupera ou gera sessionId
-    this.sessionId = this.chatService.getSessionId();
-    if (!this.sessionId) {
-      this.sessionId = this.generateSessionId();
-      this.chatService.setSessionId(this.sessionId);
+    if (this.isBrowser) {
+      this.sessionId = this.chatService.getSessionId();
+      if (!this.sessionId) {
+        this.sessionId = this.generateSessionId();
+        this.chatService.setSessionId(this.sessionId);
+      }
+      this.loadChatHistory();
     }
-
-    // Carrega histórico do chat
-    this.loadChatHistory();
   }
 
   ngOnDestroy() {
@@ -62,29 +65,27 @@ export class ChatbotComponent implements OnInit, OnDestroy {
   }
 
   private generateSessionId(): string {
-    const existing = localStorage.getItem('nutrinow_session_id');
+    const existing = this.isBrowser ? localStorage.getItem('nutrinow_session_id') : null;
     if (existing) return existing;
 
     const sid = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('nutrinow_session_id', sid);
+    if (this.isBrowser) localStorage.setItem('nutrinow_session_id', sid);
     return sid;
   }
 
   private loadChatHistory() {
-    if (!this.sessionId) return;
-
-    this.chatService.getChatHistory(this.sessionId).subscribe({
+    this.chatService.getChatHistory().subscribe({
       next: (response) => {
         if (response.success && response.history?.length > 0) {
-          this.messages = response.history.map(msg => ({
+          this.messages = response.history.map((msg: any) => ({
             text: msg.content,
-            isUser: msg.role === 'user',
-            timestamp: new Date()
+            isUser: msg.type === 'human',
+            timestamp: new Date(msg.timestamp || new Date())
           }));
           this.scrollToBottom();
         }
       },
-      error: (err) => console.error('Erro ao carregar histórico:', err)
+      error: (err: any) => console.error('Erro ao carregar histórico:', err)
     });
   }
 
@@ -96,7 +97,6 @@ export class ChatbotComponent implements OnInit, OnDestroy {
       isUser: true,
       timestamp: new Date()
     };
-
     this.messages.push(userMessage);
     const messageText = this.currentMessage;
     this.currentMessage = '';
@@ -107,26 +107,30 @@ export class ChatbotComponent implements OnInit, OnDestroy {
       next: (response: ChatResponse) => {
         this.loading = false;
         if (response.success) {
-          this.chatService.setSessionId(response.session_id);
+          if (response.session_id && this.isBrowser) {
+            this.chatService.setSessionId(response.session_id);
+            this.sessionId = response.session_id;
+          }
           const botMessage: Message = {
-            text: response.response,
+            text: response.response!,
             isUser: false,
             timestamp: new Date()
           };
           this.messages.push(botMessage);
         } else {
           this.messages.push({
-            text: response.error || 'Erro ao enviar mensagem',
+            text: response.error || 'Erro ao enviar mensagem.',
             isUser: false,
             timestamp: new Date()
           });
         }
         this.scrollToBottom();
       },
-      error: () => {
+      error: (err: any) => {
+        console.error('Erro ao enviar mensagem:', err);
         this.loading = false;
         this.messages.push({
-          text: 'Erro de conexão com o servidor',
+          text: 'Erro de conexão com o servidor.',
           isUser: false,
           timestamp: new Date()
         });
@@ -136,6 +140,8 @@ export class ChatbotComponent implements OnInit, OnDestroy {
   }
 
   onFileSelected(event: any) {
+    if (!this.isBrowser) return;
+
     const file: File = event.target.files[0];
     if (!file) return;
 
@@ -148,7 +154,7 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.scrollToBottom();
 
-    this.chatService.analyzeImage(file, this.sessionId!).subscribe({
+    this.chatService.analyzeImage(file).subscribe({
       next: (response) => {
         this.loading = false;
         if (response.success) {
@@ -160,14 +166,14 @@ export class ChatbotComponent implements OnInit, OnDestroy {
           this.messages.push(botMessage);
         } else {
           this.messages.push({
-            text: response.error || 'Erro ao analisar a imagem',
+            text: response.error || 'Erro ao analisar a imagem.',
             isUser: false,
             timestamp: new Date()
           });
         }
         this.scrollToBottom();
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Erro ao enviar imagem:', err);
         this.loading = false;
         this.messages.push({
@@ -189,13 +195,9 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     }, 100);
   }
 
+  // **Logout apenas pelo AuthService**
   logout() {
-    // 🔥 Limpa dados locais ao fazer logout
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('nutrinow_session_id');
-
-    // Chama o logout do serviço e redireciona
-    this.authService.logout();
-    this.router.navigate(['/login']);
+    if (this.isBrowser) localStorage.removeItem('nutrinow_session_id');
+    this.authService.logout().subscribe(() => this.router.navigate(['/login']));
   }
 }
