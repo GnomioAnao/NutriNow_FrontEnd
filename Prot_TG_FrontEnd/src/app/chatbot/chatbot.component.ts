@@ -190,7 +190,11 @@ export class ChatbotComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    // Apenas limpa o usuário local e redireciona
+    // 🔥 Limpa dados locais ao fazer logout
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('nutrinow_session_id');
+
+    // Chama o logout do serviço e redireciona
     this.authService.logout();
     this.router.navigate(['/login']);
   }
