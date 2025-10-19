@@ -1,14 +1,13 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
   encapsulation: ViewEncapsulation.None
@@ -26,7 +25,6 @@ export class LoginComponent {
   erro = '';
 
   constructor(
-    private http: HttpClient,
     private router: Router,
     private authService: AuthService
   ) {}
@@ -41,26 +39,16 @@ export class LoginComponent {
     this.mensagem = '';
     this.erro = '';
 
-    this.http.post('http://127.0.0.1:8000/login', this.credenciais, {
-      withCredentials: true // ✅ essencial para cookies de sessão
-    }).subscribe({
-      next: (res: any) => {
-        console.log('Resposta do backend:', res);
-
-        if (res && res.user) {
-          this.authService.login(res.user);
-          this.mensagem = res.message || 'Login realizado com sucesso!';
-
-          setTimeout(() => {
-            this.router.navigate(['/chatbot']);
-          }, 300);
-        } else {
-          this.erro = 'Usuário ou senha incorretos';
-        }
+    // ✅ Agora o AuthService cuida da requisição de login e do cookie
+    this.authService.login(this.credenciais.email, this.credenciais.senha).subscribe({
+      next: (res) => {
+        console.log('Login bem-sucedido:', res);
+        this.mensagem = res.message || 'Login realizado com sucesso!';
+        setTimeout(() => this.router.navigate(['/chatbot']), 300);
       },
       error: (err) => {
         console.error('Erro no login:', err);
-        this.erro = err.error?.error || 'Erro ao realizar login';
+        this.erro = err.error?.error || 'Usuário ou senha incorretos.';
       }
     });
   }

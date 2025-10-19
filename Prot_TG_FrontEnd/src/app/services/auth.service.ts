@@ -1,9 +1,9 @@
+// src/app/services/auth.service.ts
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
-// ===================================
-// Interface User
-// ===================================
 export interface User {
   id: number;
   nome: string;
@@ -14,39 +14,41 @@ export interface User {
   providedIn: 'root'
 })
 export class AuthService {
-
-  // BehaviorSubject com tipagem User | null
+  private apiUrl = 'http://localhost:8000';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor() {
-    // Carrega usuário do localStorage se existir
+  constructor(private http: HttpClient) {
     const user = localStorage.getItem('usuario');
     if (user) {
       this.currentUserSubject.next(JSON.parse(user));
     }
   }
 
-  // ===================================
-  // Login: atualiza BehaviorSubject e salva no localStorage
-  // ===================================
-  login(user: User): void {
-    this.currentUserSubject.next(user);
-    localStorage.setItem('usuario', JSON.stringify(user));
+  login(email: string, senha: string): Observable<any> {
+    return this.http.post<any>(
+      `${this.apiUrl}/login`,
+      { email, senha },
+      { withCredentials: true } // ESSENCIAL para salvar cookie da sessão
+    ).pipe(
+      tap(response => {
+        if (response.user) {
+          localStorage.setItem('usuario', JSON.stringify(response.user));
+          this.currentUserSubject.next(response.user);
+        }
+      })
+    );
   }
 
-  // ===================================
-  // Logout: limpa BehaviorSubject e localStorage
-  // ===================================
-  logout(): Observable<void> {
-    this.currentUserSubject.next(null);
-    localStorage.removeItem('usuario');
-    return of(); // Retorna Observable vazio para compatibilidade com .subscribe()
+  logout(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }).pipe(
+      tap(() => {
+        this.currentUserSubject.next(null);
+        localStorage.removeItem('usuario');
+      })
+    );
   }
 
-  // ===================================
-  // Retorna usuário atual (sincrono)
-  // ===================================
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
