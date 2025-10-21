@@ -8,7 +8,7 @@
 
 
   <a routerLink="/home" class="menu-btn">Home</a>
-  <a routerLink="/chatbot" class="menu-btn">ChatBot</a>
+  <a routerLink="/login" class="menu-btn">ChatBot</a>
   <button class="icon-btn" routerLink="/login">
     <i class="material-symbols-outlined">person</i>
   </button>
@@ -39,10 +39,10 @@
         <label>Gênero</label>
         <select [(ngModel)]="usuario.genero" name="genero" required>
           <option value="">Selecione o seu gênero</option>
-          <option>Masculino</option>
-          <option>Feminino</option>
-          <option>Não-binário</option>
-          <option>Prefiro não informar</option>
+          <option value="Masculino">Masculino</option>
+          <option value="Feminino">Feminino</option>
+          <option value="Não-Binário">Não-binário</option>
+          <option value="Prefiro não informar">Prefiro não informar</option>
         </select>
       </div>
       <div>
