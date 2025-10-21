@@ -77,9 +77,10 @@
       <p class="login-link">
         Já possui uma conta? <a routerLink="/login">Entrar agora</a>
       </p>
+      
+        <p *ngIf="mensagem" class="mensagem-sucesso">{{ mensagem }}</p>
+        <p *ngIf="erro" class="mensagem-erro">{{ erro }}</p>
     </form>
 
-    <p *ngIf="mensagem" class="mensagem-sucesso">{{ mensagem }}</p>
-    <p *ngIf="erro" class="mensagem-erro">{{ erro }}</p>
   </section>
 </div>

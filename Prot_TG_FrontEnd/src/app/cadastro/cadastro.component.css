@@ -218,15 +218,31 @@ body {
 }
 
 /* Mensagens */
+.mensagem-sucesso,
+.mensagem-erro {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-top: 15px;
+  text-align: center;
+  animation: fadeIn 0.4s ease-in;
+}
+
 .mensagem-sucesso {
-  color: green;
-  margin-top: 10px;
+  background-color: rgba(22, 163, 74, 0.15);
+  color: #14532d;
 }
 
 .mensagem-erro {
-  color: red;
-  margin-top: 10px;
+  background-color: rgba(220, 38, 38, 0.15);
+  color: #7f1d1d;
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 
 /* Link de login */
 .login-link {
