@@ -34,7 +34,7 @@ export class EsqueciSenhaComponent {
       return;
     }
 
-    this.http.post('http://localhost:5000/esqueci-senha', { email: this.email }).subscribe({
+    this.http.post('http://localhost:8000/esqueci-senha', { email: this.email }).subscribe({
       next: (res: any) => {
         this.mensagem = res.message || 'Um link de redefinição foi enviado para seu email!';
       },

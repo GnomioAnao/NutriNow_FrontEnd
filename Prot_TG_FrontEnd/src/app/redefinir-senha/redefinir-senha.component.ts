@@ -43,7 +43,7 @@ export class RedefinirSenhaComponent implements OnInit {
       return;
     }
 
-    this.http.post('http://localhost:5000/redefinir-senha', {
+    this.http.post('http://localhost:8000/redefinir-senha', {
       token: this.token,
       nova_senha: this.novaSenha
     }).subscribe({
