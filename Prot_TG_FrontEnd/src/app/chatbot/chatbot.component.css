@@ -290,7 +290,7 @@ body {
 .logout-button {
   position: absolute;
   top: 15px;
-  right: -95px; /* fica levemente fora da tela */
+  right: -95px; 
   background-color: #e63946;
   color: #fff;
   border: none;
@@ -335,4 +335,58 @@ body {
 
 .logout-button:hover i {
   transform: translateX(-3px);
+}
+
+.profile-button {
+  position: absolute;
+  top: calc(55px - 1cm); /* 1 cm para cima */
+  left: calc(100px - 5cm); /* 5 cm para a esquerda */
+  background-color: #0557a3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.profile-button:hover {
+  background-color: #155d8b;
+  transform: translateY(-2px);
+}
+
+.profile-button i {
+  font-size: 16px;
+}
+
+.dieta-treino-button {
+  position: absolute;
+  top: calc(90px - 1cm); /* 1 cm para cima */
+  left: calc(30px - 5cm); /* 5 cm para a esquerda */
+  background-color: #0db824;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dieta-treino-button:hover {
+  background-color: #155d8b;
+  transform: translateY(-2px);
+}
+
+.dieta-treino-button i {
+  font-size: 16px;
 }
