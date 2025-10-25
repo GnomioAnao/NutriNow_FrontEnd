@@ -1,22 +1,23 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms'; // ✅ Import necessário para ngModel
-import { CommonModule } from '@angular/common'; // ✅ Necessário para *ngIf e outros
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-perfil',
-  standalone: true, // ✅ indica que é um componente standalone
-  imports: [CommonModule, FormsModule], // ✅ módulos que o template usa
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.css']
 })
-export class PerfilComponent {
+export class PerfilComponent implements OnInit {
   // Dados do perfil
-  nome: string = 'Nome do Usuário';
+  nome: string = '';
   foto: string = 'U';
-  email: string = 'usuario@email.com';
-  dataNascimento: string = '--/--/----';
-  meta: string = 'Não definida';
-  alturaPeso: string = '-- / --';
+  email: string = '';
+  dataNascimento: string = '';
+  meta: string = '';
+  alturaPeso: string = '';
 
   // Controle do modal
   mostrarModal: boolean = false;
@@ -29,6 +30,36 @@ export class PerfilComponent {
   alturaInput: string = '';
   pesoInput: string = '';
 
+  constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    this.carregarPerfil();
+  }
+
+  // ----------------- Carregar perfil do backend -----------------
+  carregarPerfil(): void {
+    this.http.get<any>('http://localhost:8000/perfil', { withCredentials: true })
+      .subscribe({
+        next: res => {
+          if (res.success) {
+            this.nome = res.nome;
+            this.email = res.email;
+            this.dataNascimento = res.dataNascimento || '--/--/----';
+            this.meta = res.meta || 'Não definida';
+            this.alturaPeso = res.alturaPeso || '-- / --';
+
+            // Gera iniciais da foto
+            const nomes = this.nome.split(' ').filter(n => n.length > 0);
+            this.foto = nomes.length >= 2 
+              ? (nomes[0][0] + nomes[nomes.length-1][0]).toUpperCase()
+              : nomes[0][0].toUpperCase();
+          }
+        },
+        error: err => console.error('Erro ao carregar perfil', err)
+      });
+  }
+
+  // ----------------- Modal -----------------
   abrirModal(): void {
     this.mostrarModal = true;
     this.nomeInput = this.nome;
@@ -37,47 +68,59 @@ export class PerfilComponent {
     this.metaInput = this.meta;
 
     const [altura, peso] = this.alturaPeso.split(' / ');
-    this.alturaInput = altura.replace('m', '').trim();
-    this.pesoInput = peso.replace('kg', '').trim();
+    this.alturaInput = altura?.replace('m', '').trim() || '';
+    this.pesoInput = peso?.replace('kg', '').trim() || '';
   }
 
   fecharModal(): void {
     this.mostrarModal = false;
   }
 
+  // ----------------- Salvar perfil -----------------
   salvarPerfil(): void {
-    if (this.nomeInput.trim()) {
-      this.nome = this.nomeInput.trim();
+    const alturaPesoStr = this.alturaInput && this.pesoInput 
+      ? `${this.alturaInput}m / ${this.pesoInput}kg` 
+      : '';
 
-      // Gera iniciais
-      const nomes = this.nome.split(' ').filter(n => n.length > 0);
-      if (nomes.length >= 2) {
-        this.foto = (nomes[0][0] + nomes[nomes.length - 1][0]).toUpperCase();
-      } else {
-        this.foto = nomes[0][0].toUpperCase();
-      }
-    }
+    const payload = {
+      nome: this.nomeInput,
+      email: this.emailInput,
+      dataNascimento: this.dataInput,
+      meta: this.metaInput,
+      alturaPeso: alturaPesoStr
+    };
 
-    if (this.emailInput.trim()) this.email = this.emailInput.trim();
-    if (this.dataInput.trim()) this.dataNascimento = this.dataInput.trim();
-    if (this.metaInput.trim()) this.meta = this.metaInput.trim();
-
-    if (this.alturaInput.trim() && this.pesoInput.trim()) {
-      this.alturaPeso = `${this.alturaInput}m / ${this.pesoInput}kg`;
-    }
-
-    this.fecharModal();
+    this.http.post<any>('http://localhost:8000/perfil', payload, { withCredentials: true })
+      .subscribe({
+        next: res => {
+          if (res.success) {
+            this.carregarPerfil();  // Atualiza a interface com os dados do backend
+            this.fecharModal();
+          }
+        },
+        error: err => console.error('Erro ao salvar perfil', err)
+      });
   }
 
+  // ----------------- Excluir conta -----------------
   excluirConta(): void {
     if (confirm('Tem certeza que deseja excluir a conta?')) {
-      this.nome = 'Nome do Usuário';
-      this.foto = 'U';
-      this.email = 'usuario@email.com';
-      this.dataNascimento = '--/--/----';
-      this.meta = 'Não definida';
-      this.alturaPeso = '-- / --';
-      alert('Conta excluída');
+      this.http.delete<any>('http://localhost:8000/perfil', { withCredentials: true })
+        .subscribe({
+          next: res => {
+            if (res.success) {
+              alert('Conta excluída com sucesso!');
+              // Limpa dados locais
+              this.nome = '';
+              this.foto = 'U';
+              this.email = '';
+              this.dataNascimento = '';
+              this.meta = '';
+              this.alturaPeso = '';
+            }
+          },
+          error: err => console.error('Erro ao excluir conta', err)
+        });
     }
   }
 }
