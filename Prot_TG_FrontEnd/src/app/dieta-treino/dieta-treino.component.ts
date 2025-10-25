@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 interface Item {
   id: number;
@@ -12,11 +13,14 @@ interface Item {
 @Component({
   selector: 'app-dieta-treino',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './dieta-treino.component.html',
   styleUrls: ['./dieta-treino.component.css']
 })
-export class DietaTreinoComponent {
+export class DietaTreinoComponent implements OnInit {
+  private http = inject(HttpClient);
+  backendUrl = 'http://localhost:8000/dieta-treino';
+
   activeTab: 'treinos' | 'dietas' = 'treinos';
   workouts: Item[] = [];
   meals: Item[] = [];
@@ -27,6 +31,26 @@ export class DietaTreinoComponent {
   inputTitle = '';
   inputDescription = '';
   inputTime = '';
+
+  // --- Lifecycle ---
+  ngOnInit() {
+    this.loadItems();
+  }
+
+  // --- Carregar itens do backend ---
+  loadItems() {
+    ['treinos', 'dietas'].forEach(tab => {
+      const tipo = tab === 'treinos' ? 'treino' : 'dieta';
+      this.http.get(`${this.backendUrl}?tipo=${tipo}`, { withCredentials: true })
+        .subscribe({
+          next: (res: any) => {
+            if (tipo === 'treino') this.workouts = res.items || [];
+            else this.meals = res.items || [];
+          },
+          error: err => console.error('Erro ao carregar items:', err)
+        });
+    });
+  }
 
   // --- Métodos de abas ---
   switchTab(tab: 'treinos' | 'dietas') {
@@ -83,24 +107,43 @@ export class DietaTreinoComponent {
   }
 
   addItem(title: string, description: string, time: string) {
-    const newItem: Item = { id: Date.now(), title, description, time };
+    const payload = {
+      title,
+      description,
+      time,
+      tipo: this.activeTab === 'treinos' ? 'treino' : 'dieta'
+    };
 
-    if (this.activeTab === 'treinos') {
-      this.workouts.push(newItem);
-    } else {
-      this.meals.push(newItem);
-    }
+    this.http.post(this.backendUrl, payload, { withCredentials: true })
+      .subscribe({
+        next: (res: any) => {
+          const newItem: Item = { id: Date.now(), title, description, time };
+          if (this.activeTab === 'treinos') this.workouts.push(newItem);
+          else this.meals.push(newItem);
+        },
+        error: err => alert('Erro ao salvar item no servidor: ' + err.error?.error || err.message)
+      });
   }
 
   updateItem(title: string, description: string, time: string) {
     if (!this.editingItem) return;
 
-    const items = this.activeTab === 'treinos' ? this.workouts : this.meals;
-    const index = items.findIndex(item => item.id === this.editingItem!.id);
+    const payload = {
+      title,
+      description,
+      time,
+      tipo: this.activeTab === 'treinos' ? 'treino' : 'dieta'
+    };
 
-    if (index !== -1) {
-      items[index] = { ...items[index], title, description, time };
-    }
+    this.http.put(`${this.backendUrl}/${this.editingItem.id}`, payload, { withCredentials: true })
+      .subscribe({
+        next: (res: any) => {
+          const items = this.activeTab === 'treinos' ? this.workouts : this.meals;
+          const index = items.findIndex(item => item.id === this.editingItem!.id);
+          if (index !== -1) items[index] = { ...items[index], title, description, time };
+        },
+        error: err => alert('Erro ao atualizar item no servidor: ' + err.error?.error || err.message)
+      });
   }
 
   editItem(item: Item) {
@@ -112,13 +155,19 @@ export class DietaTreinoComponent {
   }
 
   deleteItem(id: number) {
-    if (confirm('Tem certeza que deseja excluir este item?')) {
-      if (this.activeTab === 'treinos') {
-        this.workouts = this.workouts.filter(w => w.id !== id);
-      } else {
-        this.meals = this.meals.filter(m => m.id !== id);
-      }
-    }
+    if (!confirm('Tem certeza que deseja excluir este item?')) return;
+
+    this.http.delete(`${this.backendUrl}/${id}`, { withCredentials: true })
+      .subscribe({
+        next: (res: any) => {
+          if (this.activeTab === 'treinos') {
+            this.workouts = this.workouts.filter(w => w.id !== id);
+          } else {
+            this.meals = this.meals.filter(m => m.id !== id);
+          }
+        },
+        error: err => alert('Erro ao excluir item no servidor: ' + err.error?.error || err.message)
+      });
   }
 
   // --- Auxiliares ---
