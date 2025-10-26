@@ -30,7 +30,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 330px;
+  gap: 300px;
   padding: 20px 0;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
@@ -55,26 +55,61 @@ body {
 
 /* Menu links */
 .cadastro-header .menu-btn {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: #ffffff;
-  color: #059669;
+  width: 90px;
+  height: 40px;
+  background-color: #fff;
+  color: #2563eb; /* mesmo azul do .nav-btn */
   font-weight: 600;
-  font-size: 16px;
+  font-size: 15px;
+  border: none;
+  border-radius: 40px; /* mesmo arredondamento */
   text-decoration: none;
   text-align: center;
-  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  overflow: visible;
+  z-index: 0;
+  transition: transform 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+  will-change: transform, box-shadow;
+} 
+
+/* Efeito de brilho passando */
+.cadastro-header .menu-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0);
+  transform: skewX(-20deg);
+  transition: left 0.4s ease;
+  z-index: 1;
+  pointer-events: none;
 }
 
+/* Hover com animação */
 .cadastro-header .menu-btn:hover {
-  background: #e0f7f4;
+  background-color: #2563eb;
+  color: #fff;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+/* Move o brilho pro outro lado quando hover */
+.cadastro-header .menu-btn:hover::before {
+  left: 130%;
+  background: rgba(255, 255, 255, 0); /* aparece só durante hover */
+}
+
+/* .cadastro-header .menu-btn:hover {
+  background-color: #e0f7f4;
   transform: translateY(-3px);
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
+} */
 
 /* Botão de perfil */
 .cadastro-header .icon-btn {
@@ -92,11 +127,10 @@ body {
   transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 
-.cadastro-header .icon-btn:hover {
-  background: #e0f7f4;
-  transform: translateY(-3px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
+ .cadastro-header .icon-btn:hover {
+ transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+} 
 
 
 .cadastro-header .perfil img {

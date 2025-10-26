@@ -66,10 +66,10 @@
 .nav-btn {
   position: relative;
   background-color: #fff;
-  color: #2563eb; /* azul petróleo */
+  color: #2563eb; 
   padding: 10px 24px;
   border: none;
-  border-radius: 8px;
+  border-radius: 20px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
@@ -103,6 +103,7 @@
 .nav-btn:hover::before {
   left: 130%;
 }
+
 /* Ícone do perfil */
 .profile-link {
   text-decoration: none;
