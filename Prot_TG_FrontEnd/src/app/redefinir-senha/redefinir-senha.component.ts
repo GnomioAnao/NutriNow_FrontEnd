@@ -20,14 +20,21 @@ export class RedefinirSenhaComponent implements OnInit {
   mensagem = '';
   erro = '';
 
-  constructor(private http: HttpClient, private route: ActivatedRoute) {}
+  constructor(private http: HttpClient, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     // Captura o token da URL (?token=xxxx)
     this.route.queryParams.subscribe(params => {
       this.token = params['token'] || '';
+      // const header = document.querySelector('header');
+      // if (header) header.style.display = 'none';
     });
   }
+
+  // ngOnDestroy() {
+  //   const header = document.querySelector('header');
+  //   if (header) header.style.display = '';
+  // }
 
   redefinirSenha(): void {
     this.mensagem = '';

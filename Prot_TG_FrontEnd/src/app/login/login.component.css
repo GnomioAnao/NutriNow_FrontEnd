@@ -142,7 +142,7 @@
 }
 
 /* Botões */
-.btn-primary {
+button.btn-primary {
   width: 100%;
   padding: 14px;
   margin-top: 10px;
@@ -155,7 +155,7 @@
   transition: box-shadow 0.3s;
 }
 
-.btn-primary:hover {
+button.btn-primary:hover {
   box-shadow: 0 6px 20px rgba(16,185,129,0.3);
 }
 
