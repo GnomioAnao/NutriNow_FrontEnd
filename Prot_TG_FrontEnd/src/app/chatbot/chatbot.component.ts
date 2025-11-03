@@ -200,11 +200,5 @@ export class ChatbotComponent implements OnInit, OnDestroy {
     if (this.isBrowser) localStorage.removeItem('nutrinow_session_id');
     this.authService.logout().subscribe(() => this.router.navigate(['/login']));
   }
-  goToProfile() {
-    window.location.href = 'http://localhost:4200/perfil';
-  }
 
-  goToDietaTreino() {
-    window.location.href = 'http://localhost:4200/dieta-treino';
-  }
 }
