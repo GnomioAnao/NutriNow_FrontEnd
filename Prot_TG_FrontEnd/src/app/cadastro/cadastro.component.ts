@@ -42,20 +42,46 @@ export class CadastroComponent {
     console.log("Toggle clicado:", this.showPassword);
   }
 
-  criarConta(): void {
-    this.mensagem = '';
-    this.erro = '';
+  // criarConta(): void {
+  //   this.mensagem = '';
+  //   this.erro = '';
 
-    this.http.post('http://localhost:8000/cadastro', this.usuario).subscribe({
-      next: (res: any) => {
-        this.mensagem = res.message || 'Conta criada com sucesso!';
-        this.usuario = { nome: '', sobrenome: '', data_nascimento: '', genero: '', email: '', senha: '' };
-      },
-      error: (err) => {
-        this.erro = err.error?.error || 'Erro ao criar conta';
-      }
+  //   this.http.post('http://localhost:8000/cadastro', this.usuario).subscribe({
+  //     next: (res: any) => {
+  //       this.mensagem = res.message || 'Conta criada com sucesso!';
+  //       this.usuario = { nome: '', sobrenome: '', data_nascimento: '', genero: '', email: '', senha: '' };
+  //     },
+  //     error: (err) => {
+  //       this.erro = err.error?.error || 'Erro ao criar conta';
+  //     }
+  //   });
+  // }
+
+  criarConta(form: any): void {
+  this.mensagem = '';
+  this.erro = '';
+
+  // se o formulário for inválido, marca todos os campos como "touched" para mostrar os erros
+  if (form.invalid) {
+    Object.values(form.controls).forEach((control: any) => {
+      control.markAsTouched();
     });
+    this.erro = 'Preencha todos os campos obrigatórios.';
+    return;
   }
+
+  // requisição HTTP normalmente
+  this.http.post('http://localhost:8000/cadastro', this.usuario).subscribe({
+    next: (res: any) => {
+      this.mensagem = res.message || 'Conta criada com sucesso!';
+      this.usuario = { nome: '', sobrenome: '', data_nascimento: '', genero: '', email: '', senha: '' };
+      form.resetForm();
+    },
+    error: (err) => {
+      this.erro = err.error?.error || 'Erro ao criar conta';
+    }
+  });
+}
 
   voltar(): void {
     this.router.navigate(['/home']);
