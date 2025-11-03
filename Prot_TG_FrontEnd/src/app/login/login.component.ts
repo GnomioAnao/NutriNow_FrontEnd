@@ -44,7 +44,7 @@ export class LoginComponent {
       next: (res) => {
         console.log('Login bem-sucedido:', res);
         this.mensagem = res.message || 'Login realizado com sucesso!';
-        setTimeout(() => this.router.navigate(['/chatbot']), 300);
+        setTimeout(() => this.router.navigate(['/home']), 300);
       },
       error: (err) => {
         console.error('Erro no login:', err);
