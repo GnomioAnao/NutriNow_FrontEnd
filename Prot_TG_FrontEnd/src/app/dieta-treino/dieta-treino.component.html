@@ -1,75 +1,86 @@
-<div class="container">
-  <div class="header-card">
-    <h1>Rotina de Treinos e Dietas</h1>
+<div class="nutri-layout">
+  <div class="nutri-card">
+    <!-- Cabeçalho -->
+    <div class="nutri-header">
+      <div class="nutri-header-icon">🏋️‍♂️</div>
+      <div>
+        <h1 class="nutri-title">Rotina de Treinos e Dietas</h1>
+        <p class="nutri-subtitle">Gerencie seus treinos e refeições</p>
+      </div>
+    </div>
 
-    <div class="tabs">
-      <button 
-        class="tab-button" 
+    <!-- Abas -->
+    <div class="nutri-tabs">
+      <button
+        class="nutri-tab"
         [class.active]="activeTab === 'treinos'"
         (click)="switchTab('treinos')">
-        🏋️ Treinos
+        <span class="icon">💪</span> Treinos
       </button>
 
-      <button 
-        class="tab-button" 
+      <button
+        class="nutri-tab"
         [class.active]="activeTab === 'dietas'"
         (click)="switchTab('dietas')">
-        🍽️ Dietas
+        <span class="icon">🍽️</span> Dietas
       </button>
     </div>
 
-    <button class="btn-add" (click)="openModal()">
-      ➕ {{ addButtonText }}
+    <!-- Botão adicionar -->
+    <button class="nutri-add-btn" (click)="openModal()">
+      <span class="icon">＋</span> {{ addButtonText }}
     </button>
-  </div>
 
-  <!-- Lista -->
-  <div *ngIf="currentItems.length > 0; else vazio" class="items-list">
-    <div class="item-card" *ngFor="let item of currentItems">
-      <div class="item-content">
-        <div class="item-header">
-          <h3 class="item-title">{{ item.title }}</h3>
+    <!-- Lista -->
+    <div *ngIf="currentItems.length > 0; else vazio" class="nutri-list">
+      <div class="nutri-item" *ngFor="let item of currentItems">
+        <div class="nutri-item-info">
+          <h3 class="nutri-item-title">{{ item.title }}</h3>
+          <p class="nutri-item-description">{{ item.description }}</p>
+
+          <div *ngIf="item.time" class="nutri-item-time">
+            <span class="icon">🕐</span> {{ item.time }}
+          </div>
         </div>
-        <p class="item-description">{{ item.description }}</p>
-        <p *ngIf="item.time" class="item-time">🕐 {{ item.time }}</p>
-      </div>
 
-      <div class="item-actions">
-        <button class="btn-icon btn-edit" (click)="editItem(item)">✏️</button>
-        <button class="btn-icon btn-delete" (click)="deleteItem(item.id)">🗑️</button>
+        <div class="nutri-item-actions">
+          <button class="nutri-btn-icon" (click)="editItem(item)">✏️</button>
+          <button class="nutri-btn-icon" (click)="deleteItem(item.id)">🗑️</button>
+        </div>
       </div>
     </div>
+
+    <!-- Estado vazio -->
+    <ng-template #vazio>
+      <div class="nutri-empty">{{ emptyText }}</div>
+    </ng-template>
   </div>
 
-  <ng-template #vazio>
-    <div class="empty-state">{{ emptyText }}</div>
-  </ng-template>
-
   <!-- Modal -->
-  <div class="modal" [class.show]="mostrarModal" (click)="closeModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <div class="modal-header">
+  <div class="nutri-modal" [class.show]="mostrarModal" (click)="closeModal()">
+    <div class="nutri-modal-content" (click)="$event.stopPropagation()">
+      <div class="nutri-modal-header">
         <h2>{{ modalTitle }}</h2>
-        <button class="btn-close" (click)="closeModal()">✖️</button>
+        <button class="nutri-close-btn" (click)="closeModal()">✖️</button>
       </div>
 
-      <div class="modal-body">
-        <div class="form-group">
+      <div class="nutri-modal-body">
+        <div class="nutri-form-group">
           <label>Título</label>
           <input [(ngModel)]="inputTitle" placeholder="Ex: Treino de Peito ou Café da Manhã" />
         </div>
 
-        <div class="form-group">
+        <div class="nutri-form-group">
           <label>Descrição</label>
           <textarea [(ngModel)]="inputDescription" placeholder="Ex: 3x12 supino... ou Aveia e Banana"></textarea>
         </div>
 
-        <div class="form-group">
+        <div class="nutri-form-group">
           <label>Horário (opcional)</label>
           <input type="time" [(ngModel)]="inputTime" />
         </div>
 
-        <button class="btn-submit" (click)="handleSubmit()">{{ buttonText }}</button>
+        <button class="nutri-submit-btn" (click)="handleSubmit()">{{ buttonText }}</button>
       </div>
     </div>
   </div>
