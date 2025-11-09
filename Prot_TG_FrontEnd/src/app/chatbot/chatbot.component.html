@@ -47,7 +47,7 @@
 
             <!-- message bubble -->
             <div class="msg-bubble">
-              <div class="msg-text">{{ msg.text }}</div>
+              <div class="msg-text" [innerHTML]="formatMessage(msg.text)"></div>
               <div class="msg-time">{{ msg.timestamp | date:'HH:mm' }}</div>
             </div>
 

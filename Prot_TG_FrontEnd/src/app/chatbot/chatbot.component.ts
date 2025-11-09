@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
 import { AuthService, User } from '../services/auth.service';
 import { ChatService, ChatResponse } from '../services/chat.service';
 import { Subscription } from 'rxjs';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 interface Message {
   text: string;
@@ -199,6 +201,11 @@ export class ChatbotComponent implements OnInit, OnDestroy {
   logout() {
     if (this.isBrowser) localStorage.removeItem('nutrinow_session_id');
     this.authService.logout().subscribe(() => this.router.navigate(['/login']));
+  }
+
+  formatMessage(text: string): string {
+    const rawHtml = marked.parse(text || '') as string;
+    return DOMPurify.sanitize(rawHtml);
   }
 
 }
